@@ -1,4 +1,7 @@
 @Enunciado 1
+@Breno Moura de Abreu e Nicolas Da Veiga Pereira
+@S73
+@10/12/2019
 
 .equ SWI_SETSEG8, 0x200 		@display de 8 segmentos
 .equ SEG_A, 0x80			@padrões de cada segmento do display de 8 segmentos
@@ -52,7 +55,7 @@
 
 .text
 
-recomecar:	
+recomecar:				@reinicia o programa a partir daqui	
 	mov r3, #1			@contador de rodadas
 	mov r4, #0			@contador segundos
 	mov r5, #0			@contador milésimos de segundos
@@ -60,12 +63,12 @@ recomecar:
 
 	swi SWI_CLEAR_DISPLAY
 
-	mov r0, #0
+	mov r0, #0			@escreve a string 'Rodada' na tela LCD
 	mov r1, #0
 	ldr r2, =Rodada
 	swi SWI_DRAW_STRING
 
-	mov r0, #7
+	mov r0, #7			@escreve um inteiro na tela LCD
 	mov r1, #0
 	mov r2, r3
 	swi SWI_DRAW_INT
@@ -97,35 +100,33 @@ recomecar:
 
 	mov r0, #0
 
-	mov r6, #16
+	mov r6, #16			@apaga o diaplay de 8 segmentos
 	ldr r2, =Digitos
 	ldr r0, [r2, r6, lsl#2]
 	swi SWI_SETSEG8
 
-	mov r0, #0
-	mov r1, #0
-
 inicio:
-	swi SWI_CheckBlack
+	mov r0, #0
+	swi SWI_CheckBlack		@espera o usuário apertar um dos botões pretos
 	cmp r0, #0
 	beq inicio
 
 mostraNumero:
-	swi SWI_GetTicks
+	swi SWI_GetTicks		@pega o valor do relógio
 	mov r6, r0			@r6 armazena o valor aleatória gerado
 	ldr r7, =VALOR
-	and r6, r6, r7
+	and r6, r6, r7			@faz o mascaramento para obter apenas um valor entre 0 e 15
 	mov r0, #0
-	ldr r2, =Digitos
-	ldr r0, [r2, r6, lsl#2]
-	swi SWI_SETSEG8
+	ldr r2, =Digitos		 
+	ldr r0, [r2, r6, lsl#2]		
+	swi SWI_SETSEG8			@escreve o valor aleatório no display de 8 segmentos	
 
 	mov r0, #7
 	mov r1, #0
 	mov r2, r3
-	swi SWI_DRAW_INT
+	swi SWI_DRAW_INT		@escreve o numero da rodada
 
-contagem:
+contagem:				@realiza a contagem de tempo
 	ldr r9,=Top15bitRange
 	ldr r10,=EmbestTimerMask
 	ldr r11,=ms50
@@ -147,27 +148,28 @@ tempoSimples:
 	sub r12,r2,r1 			@ tempo = T2-T1
 
 verificaInt:
-	cmp r2,r11 			@tempo é menor que o intervalo?
+	cmp r2,r11 			@caso o tempo seja menor que o intervalo, volta para o loop até chegar o tempo certo
 	blt repetirAteTempo
 	ldr r0, =MS
 	add r5, r0, r5
 	ldr r0, =MAX
 	cmp r5, r0
-	bge zera
-	mov r0, #0
+	bge zera			@caso o valor em milisegundos chegue a 1000, pula para zerá-lo
+	mov r0, #0			@caso contrário continua incrementando
 	cmp r0, #0
 	beq atualizaTela
 
-zera:
+zera:					@zera o contador de milisegundos e incrementa o de segundos
 	mov r5, #0
 	mov r0, #1
 	add r4, r0, r4
+	add r14, r14, r0
 	
 	cmp r4, #10
 	blt atualizaTela
 	mov r13, #10
 	
-atualizaTela:
+atualizaTela:				@atualiza a tela com os valores de segundos e milisegundos
 	mov r0, r13
 	mov r1, #0
 	mov r2, r4
@@ -179,7 +181,7 @@ atualizaTela:
 	swi SWI_DRAW_INT
 	
 
-botaoAzul:
+botaoAzul:				@verifica se um botão azul foi pressionado
 	mov r0, #0
 	swi SWI_CheckBlue
 	cmp r0, #0
@@ -249,34 +251,34 @@ botaoAzul:
 	mov r8, #15
 	beq compara
 	
-compara:
+compara:				@compara o valor aleatório com o botão pressionado
 	mov r0, #0
 	cmp r8, r6
-	beq acertou
+	beq acertou			@caso esteja correto pula para 'acertou'
 	
 	swi SWI_CLEAR_DISPLAY
 	mov r0, #0
 	mov r1, #0
 	ldr r2, =Perdeu
 	swi SWI_DRAW_STRING
-	b fim
+	b fim				@caso esteja errado, escreve 'Perdeu!' e pula para o fim
 
 acertou:
-	mov r0, #1
-	add r3, r3, r0
+	mov r0, #1			
+	add r3, r3, r0			@incrementa o numero da rodada
 	ldr r0, =RODADAS
 	cmp r3, r0
-	beq ganhou
+	beq ganhou			@confere se a rodada é a de numero 6, caso seja, pula para 'ganhou'
 	
 	mov r0, #0
 	cmp r0, #0
-	beq inicio
+	beq inicio			@caso seja menor que 6 volta para o inicio
 
-ganhou:
+ganhou:					@escreve a string 'Ganhou' e os valores de segundos e milisegundos
 	mov r0, #0
 	mov r1, #0
 	ldr r2, =Ganhou
-	swi SWI_DRAW_STRING
+	swi SWI_DRAW_STRING		
 	
 	mov r0, #30
 	mov r1, #0
@@ -289,14 +291,14 @@ ganhou:
 	swi SWI_DRAW_INT
 
 
-fim:
-	mov r0, #0
+fim:					@espera o usuário pressionar um dos botões pretos para recomeçar o jogo
+	mov r0, #0	
 	swi SWI_CheckBlack
 	cmp r0, #0
 	beq fim
 	b recomecar
 	
-.data
+.data					@strings que serão utilizadas no programa
 
 Rodada: .asciz "Rodada  :   .   s"
 Perdeu: .asciz "Perdeu!"
@@ -325,3 +327,5 @@ Digitos:					@padrões de caracteres do display de 8 segmentos
 
 swi SWI_EXIT
 
+@Bibliografia: The ARMSim# User Guide - R. N. Horspool, W. D. Lyons, M. Serra
+@Pode ser encontrado no endereço: https://www.lri.fr/~de/ARM-Tutorial.pdf
