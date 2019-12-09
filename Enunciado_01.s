@@ -176,7 +176,20 @@ atualizaTela:				@atualiza a tela com os valores de segundos e milisegundos
 	mov r2, r4
 	swi SWI_DRAW_INT
 	
+	
+	cmp r5, #50
+	beq imprimeCinquenta
+
 	mov r0, #13
+	mov r1, #0
+	mov r2, r5
+	swi SWI_DRAW_INT
+	
+	cmp r1, #0
+	beq botaoAzul
+
+imprimeCinquenta:
+	mov r0, #14
 	mov r1, #0
 	mov r2, r5
 	swi SWI_DRAW_INT
