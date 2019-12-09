@@ -172,6 +172,7 @@ zera:					@zera o contador de milisegundos e incrementa o de segundos
 atualizaTela:				@atualiza a tela com os valores de segundos e milisegundos
 	mov r0, r13
 	mov r1, #0
+	cmp r2,r1 
 	mov r2, r4
 	swi SWI_DRAW_INT
 	
@@ -280,11 +281,25 @@ ganhou:					@escreve a string 'Ganhou' e os valores de segundos e milisegundos
 	ldr r2, =Ganhou
 	swi SWI_DRAW_STRING		
 	
+	mov r0, #9
+	cmp r0, r4
+	bge posicaoUnidade
+
 	mov r0, #30
 	mov r1, #0
 	mov r2, r4
 	swi SWI_DRAW_INT
-	
+
+	cmp r1, #0
+	beq imprimirMinis
+
+posicaoUnidade:
+	mov r0, #31
+	mov r1, #0
+	mov r2, r4
+	swi SWI_DRAW_INT
+
+imprimirMinis:
 	mov r0, #33
 	mov r1, #0
 	mov r2, r5
