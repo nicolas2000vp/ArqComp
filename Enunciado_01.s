@@ -34,7 +34,6 @@
 .equ BLUE_KEY_D, 1<<13 			@botão(D)
 .equ BLUE_KEY_E, 1<<14 			@botão(E)
 .equ BLUE_KEY_F, 1<<15 			@botão(F)
-.equ NULL, 1<<16			@botão nulo
 
 .equ SWI_DRAW_STRING, 0x204 		@escreve uma string no display LCD
 .equ SWI_DRAW_INT, 0x205 		@escreve um inteiro no display LCD
@@ -189,103 +188,71 @@ botaoAzul:				@verifica se um botão azul foi pressionado
 	beq contagem
 
 	cmp r0,#BLUE_KEY_0
-	beq botao0
+	mov r8, #0
+	beq compara
 	
 	cmp r0,#BLUE_KEY_1
-	beq botao1
+	mov r8, #1
+	beq compara
 
 	cmp r0,#BLUE_KEY_2
-	beq botao2
+	mov r8, #2
+	beq compara
 
 	cmp r0,#BLUE_KEY_3
-	beq botao3
+	mov r8, #3
+	beq compara
 
 	cmp r0,#BLUE_KEY_4
-	beq botao4
+	mov r8, #4
+	beq compara
 
 	cmp r0,#BLUE_KEY_5
-	beq botao5
+	mov r8, #5
+	beq compara
 
 	cmp r0,#BLUE_KEY_6
-	beq botao6
+	mov r8, #6
+	beq compara
 
 	cmp r0,#BLUE_KEY_7
-	beq botao7
+	mov r8, #7
+	beq compara
 
 	cmp r0,#BLUE_KEY_8
-	beq botao8
+	mov r8, #8
+	beq compara
 	
 	cmp r0,#BLUE_KEY_9
-	beq botao9
+	mov r8, #9
+	beq compara
 
 	cmp r0,#BLUE_KEY_A
-	beq botaoA
+	mov r8, #10
+	beq compara
 
 	cmp r0,#BLUE_KEY_B
-	beq botaoB
+	mov r8, #11
+	beq compara
 
 	cmp r0,#BLUE_KEY_C
-	beq botaoC
+	mov r8, #12
+	beq compara
 
 	cmp r0,#BLUE_KEY_D
-	beq botaoD
+	mov r8, #13
+	beq compara
 
 	cmp r0,#BLUE_KEY_E
-	beq botaoE
+	mov r8, #14
+	beq compara
 
 	cmp r0,#BLUE_KEY_F
-	beq botaoF
-
-botao0:
-	mov r8, #0
-	b compara
-botao1:
-	mov r8, #1
-	b compara
-botao2:
-	mov r8, #2
-	b compara
-botao3:
-	mov r8, #3
-	b compara
-botao4:
-	mov r8, #4
-	b compara
-botao5:
-	mov r8, #5
-	b compara
-botao6:
-	mov r8, #6
-	b compara
-botao7:
-	mov r8, #7
-	b compara
-botao8:
-	mov r8, #8
-	b compara
-botao9:
-	mov r8, #9
-	b compara
-botaoA:
-	mov r8, #10
-	b compara
-botaoB:
-	mov r8, #11
-	b compara
-botaoC:
-	mov r8, #12
-	b compara
-botaoD:
-	mov r8, #13
-	b compara
-botaoE:
-	mov r8, #14
-	b compara
-botaoF:
 	mov r8, #15
-	b compara
-
+	beq compara
+	
 compara:				@compara o valor aleatório com o botão pressionado
+	mov r0, #0
 	cmp r8, r6
 	beq acertou			@caso esteja correto pula para 'acertou'
 	
